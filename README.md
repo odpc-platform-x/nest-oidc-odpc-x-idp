@@ -66,6 +66,16 @@ import { AuthModule } from '@odpc-platform-x/nest-oidc-odpc-x-idp'
 export class AppModule {}
 ```
 
+```dotenv
+# Official ODPCX IdP (frontend: https://idp.odpcx.com)
+OIDC_ISSUER=https://api.idp.odpcx.com
+OIDC_CLIENT_ID=...
+OIDC_CLIENT_SECRET=...
+OIDC_REDIRECT_URI=https://your-app.example.com/v1/auth/callback
+```
+
+Discovery document: `https://api.idp.odpcx.com/.well-known/openid-configuration`
+
 This wires up `GET /auth/login`, `GET /auth/callback`, `POST /auth/logout`,
 `GET /auth/me`, and exports `AuthGuard` for use on your own protected routes.
 Layer your own `RolesGuard` / `@Roles()` decorator on top — that's
