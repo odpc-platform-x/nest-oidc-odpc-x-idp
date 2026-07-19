@@ -4,56 +4,77 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>@odpc-platform-x/nest-oidc-odpc-x-idp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #ffffff;
-    --bg-alt: #f5f6f8;
-    --fg: #1a1d23;
-    --fg-muted: #5a6170;
-    --border: #e2e5ea;
-    --accent: #3457d5;
-    --code-bg: #f0f1f4;
-    --code-border: #dde0e6;
+    --ink: #0A1B2E;
+    --surface: #F7F9FC;
+    --card: #FFFFFF;
+    --accent: #0E9F6E;
+    --key: #F5A524;
+    --muted: #5B7089;
+    --border: color-mix(in srgb, var(--ink) 12%, transparent);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #14161a;
-      --bg-alt: #1b1e24;
-      --fg: #e6e8ec;
-      --fg-muted: #9aa1ad;
-      --border: #2b2f37;
-      --accent: #7f9cff;
-      --code-bg: #1e2128;
-      --code-border: #2b2f37;
+      --ink: #E8EEF5;
+      --surface: #0A1B2E;
+      --card: #12253A;
+      --muted: #93A6BD;
+      --border: color-mix(in srgb, var(--ink) 12%, transparent);
     }
   }
+  :root[data-theme="dark"] {
+    --ink: #E8EEF5;
+    --surface: #0A1B2E;
+    --card: #12253A;
+    --muted: #93A6BD;
+    --border: color-mix(in srgb, var(--ink) 12%, transparent);
+  }
+  :root[data-theme="light"] {
+    --ink: #0A1B2E;
+    --surface: #F7F9FC;
+    --card: #FFFFFF;
+    --muted: #5B7089;
+    --border: color-mix(in srgb, var(--ink) 12%, transparent);
+  }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Sarabun, Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--fg);
-    line-height: 1.65;
+    font-family: 'IBM Plex Sans Thai', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    line-height: 1.7;
+    font-size: 16px;
   }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
-  code, pre {
-    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  code, pre, .mono {
+    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   }
   code {
-    background: var(--code-bg);
-    border: 1px solid var(--code-border);
-    border-radius: 4px;
-    padding: 0.1em 0.4em;
-    font-size: 0.9em;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.1em 0.45em;
+    font-size: 0.88em;
   }
   pre {
-    background: var(--code-bg);
-    border: 1px solid var(--code-border);
-    border-radius: 8px;
-    padding: 1rem 1.2rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1.3rem;
     overflow-x: auto;
     font-size: 0.85rem;
+    max-width: 100%;
   }
   pre code { background: none; border: none; padding: 0; }
 
@@ -71,87 +92,253 @@
     overflow-y: auto;
     padding: 2rem 1.2rem;
     border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
   }
-  nav.sidebar .pkg {
-    font-size: 0.8rem;
+  .pkg-head { margin-bottom: 0.4rem; }
+  .pkg-head .name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
     font-weight: 600;
-    color: var(--fg-muted);
-    margin-bottom: 1.2rem;
+    color: var(--muted);
     word-break: break-word;
+    display: block;
+    margin-bottom: 0.5rem;
   }
-  nav.sidebar ul { list-style: none; padding: 0; margin: 0; }
-  nav.sidebar li { margin-bottom: 0.3rem; }
+  .version-chip {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.15rem 0.65rem;
+    color: var(--accent);
+    margin-bottom: 1.4rem;
+  }
+  nav.sidebar ul { list-style: none; padding: 0; margin: 0; flex: 1; }
+  nav.sidebar li { margin-bottom: 0.2rem; }
   nav.sidebar a {
     display: block;
-    color: var(--fg-muted);
-    padding: 0.35rem 0.6rem;
-    border-radius: 6px;
+    color: var(--muted);
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
     font-size: 0.92rem;
   }
-  nav.sidebar a:hover { background: var(--bg-alt); text-decoration: none; }
-  nav.sidebar a.active { color: var(--accent); background: var(--bg-alt); font-weight: 600; }
+  nav.sidebar a:hover { background: var(--card); text-decoration: none; }
+  nav.sidebar a.active { color: var(--accent); background: var(--card); font-weight: 600; }
+  .sidebar-logos {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding-top: 1.2rem;
+    margin-top: 1.2rem;
+    border-top: 1px solid var(--border);
+  }
+  .sidebar-logos img { height: 28px; width: auto; opacity: 0.85; }
 
   main { padding: 2.5rem 2.5rem 6rem; min-width: 0; }
-  header.hero { margin-bottom: 2.5rem; }
-  header.hero h1 { font-size: 1.6rem; margin: 0 0 0.4rem; }
-  header.hero p.tag { color: var(--fg-muted); margin: 0; font-size: 0.95rem; }
+  .content { max-width: 760px; }
+  header.hero { margin-bottom: 2rem; }
+  header.hero h1 { font-size: 1.55rem; margin: 0 0 0.5rem; font-weight: 700; letter-spacing: -0.01em; }
+  header.hero p.tag { color: var(--muted); margin: 0; font-size: 0.98rem; max-width: 60ch; }
 
-  section { margin-bottom: 3.2rem; scroll-margin-top: 1.5rem; }
-  section h2 {
-    font-size: 1.25rem;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
+  .badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.2rem 0; }
+  .chip {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.28rem 0.7rem;
+    color: var(--muted);
+    background: var(--card);
+    white-space: nowrap;
   }
-  section h3 { font-size: 1rem; margin: 1.4rem 0 0.6rem; }
+
+  .install-strip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 1.4rem 0 2rem;
+  }
+  .install-strip code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.85rem;
+    flex: 1;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .copy-btn {
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    font-size: 0.78rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.35rem 0.7rem;
+    color: var(--accent);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .copy-btn:hover { background: var(--surface); }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 0.5rem;
+  }
+
+  section { margin-bottom: 3.4rem; scroll-margin-top: 1.5rem; }
+  section h2 {
+    font-size: 1.2rem;
+    padding-bottom: 0.5rem;
+    margin: 0 0 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  section h3 { font-size: 0.98rem; margin: 1.5rem 0 0.6rem; }
 
   table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.88rem;
+    font-size: 0.87rem;
     margin: 0.8rem 0;
   }
   th, td {
     text-align: left;
-    padding: 0.5rem 0.7rem;
+    padding: 0.55rem 0.7rem;
     border-bottom: 1px solid var(--border);
     vertical-align: top;
   }
-  th { color: var(--fg-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.02em; }
+  th { color: var(--muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'IBM Plex Mono', monospace; }
 
   ul.plain { padding-left: 1.3rem; }
-  ul.plain li { margin-bottom: 0.4rem; }
+  ul.plain li { margin-bottom: 0.5rem; }
 
-  .diagram-wrap { overflow-x: auto; margin: 1.2rem 0; }
-  .diagram-wrap svg { display: block; min-width: 640px; }
-  .diagram-wrap text { fill: var(--fg); font-family: inherit; }
-  .diagram-wrap .lane-label { fill: var(--fg-muted); font-size: 12px; font-weight: 600; }
-  .diagram-wrap line.lifeline { stroke: var(--border); stroke-width: 1.5; }
-  .diagram-wrap path.msg { stroke: var(--accent); stroke-width: 1.6; fill: none; }
-  .diagram-wrap path.arrowhead { fill: var(--accent); stroke: none; }
-  .diagram-wrap text.msg-label { font-size: 12px; }
-
-  .callout {
-    background: var(--bg-alt);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    border-radius: 6px;
-    padding: 0.8rem 1rem;
-    font-size: 0.9rem;
-    margin: 1rem 0;
+  .step-list { list-style: none; padding: 0; counter-reset: step; }
+  .step-list > li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 2.6rem;
+    margin-bottom: 2rem;
+  }
+  .step-list > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0.05rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  @media (max-width: 860px) {
+  .callout {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.9rem;
+    margin: 1.2rem 0;
+  }
+
+  /* auth flow rail */
+  .flow-wrap { margin: 1.6rem 0 0.8rem; overflow-x: auto; }
+  .rail {
+    position: relative;
+    min-width: 620px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 2.2rem 0.5rem 0;
+  }
+  .rail::before {
+    content: '';
+    position: absolute;
+    top: calc(2.2rem + 8px);
+    left: 4%;
+    right: 4%;
+    height: 1px;
+    background: var(--border);
+  }
+  .rail-node { position: relative; width: 20%; text-align: center; z-index: 1; }
+  .rail-dot-static {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 2px solid var(--muted);
+    margin: 0 auto 0.6rem;
+  }
+  .rail-node[data-stage="idp"] .rail-dot-static,
+  .rail-node[data-stage="callback"] .rail-dot-static,
+  .rail-node[data-stage="cookie"] .rail-dot-static {
+    border-color: var(--key);
+  }
+  .rail-label { font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+  .rail-label code { font-size: 0.72rem; }
+
+  .rail-traveler {
+    position: absolute;
+    top: calc(2.2rem + 8px - 5px);
+    left: 4%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--muted);
+    animation: travel 6s ease-in-out infinite;
+  }
+  @keyframes travel {
+    0%   { left: 4%;  background: var(--muted); transform: scale(1); }
+    24%  { left: 25%; background: var(--muted); }
+    26%  { left: 25%; background: var(--key); }
+    48%  { left: 50%; background: var(--key); }
+    62%  { left: 75%; background: var(--key); }
+    75%  { left: 96%; background: var(--key); transform: scale(1); }
+    88%  { left: 96%; background: var(--key); transform: scale(1.6); }
+    100% { left: 96%; background: var(--key); transform: scale(1.6); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rail-traveler { animation: none; left: 96%; background: var(--key); transform: scale(1.6); }
+  }
+  .rail-caption { font-size: 0.86rem; color: var(--muted); margin-top: 1rem; }
+
+  @media (max-width: 900px) {
     .layout { grid-template-columns: 1fr; }
-    nav.sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    nav.sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); flex-direction: row; align-items: center; flex-wrap: wrap; gap: 0.6rem 1.2rem; }
+    nav.sidebar ul { display: flex; flex-wrap: wrap; gap: 0.2rem; flex: unset; }
+    .pkg-head { margin-bottom: 0; }
+    .sidebar-logos { border-top: none; margin-top: 0; padding-top: 0; }
     main { padding: 1.5rem; }
+  }
+  @media (max-width: 400px) {
+    main { padding: 1rem; }
+    header.hero h1 { font-size: 1.3rem; }
   }
 </style>
 </head>
 <body>
 <div class="layout">
   <nav class="sidebar" id="sidebar">
-    <div class="pkg">@odpc-platform-x/nest-oidc-odpc-x-idp</div>
+    <div class="pkg-head">
+      <span class="name">@odpc-platform-x/nest-oidc-odpc-x-idp</span>
+      <span class="version-chip">v1.x</span>
+    </div>
     <ul>
       <li><a href="#overview">Overview</a></li>
       <li><a href="#installation">Installation</a></li>
@@ -160,124 +347,104 @@
       <li><a href="#public-api">Public API</a></li>
       <li><a href="#caveats">Caveats</a></li>
     </ul>
+    <div class="sidebar-logos">
+      <a href="https://idp.odpcx.com"><img src="https://cdn.odpcx.com/public/idp/idp-logo.webp" alt="ODPCX IdP Link"></a>
+      <img src="https://cdn.odpcx.com/public/idp/odpcx-logo.webp" alt="ODPC-X Platform">
+    </div>
   </nav>
 
   <main>
-    <header class="hero">
-      <p style="text-align: center; margin-bottom: 1.5rem;">
-        <a href="https://idp.odpcx.com" style="margin-right: 1rem;"><img src="https://cdn.odpcx.com/public/idp/idp-logo.webp" alt="ODPCX IdP Link" height="56"></a>
-        <img src="https://cdn.odpcx.com/public/idp/odpcx-logo.webp" alt="ODPC-X Platform" height="56" style="margin-right: 1rem;">
-      </p>
-      <p style="text-align: center; margin-bottom: 2rem;">
-        <img src="https://img.shields.io/badge/NestJS-11-E0234E?logo=nestjs&logoColor=white" alt="NestJS" style="margin: 0 0.3rem;">
-        <img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white" alt="TypeScript" style="margin: 0 0.3rem;">
-        <img src="https://img.shields.io/badge/OpenID_Connect-openid--client_v6-F78C40?logo=openid&logoColor=white" alt="OpenID Connect" style="margin: 0 0.3rem;">
-        <img src="https://img.shields.io/badge/JWT-jose_RS256-000000?logo=jsonwebtokens&logoColor=white" alt="jose" style="margin: 0 0.3rem;">
-        <img src="https://img.shields.io/badge/Vitest-tested-6E9F18?logo=vitest&logoColor=white" alt="Vitest" style="margin: 0 0.3rem;">
-      </p>
-      <h1>@odpc-platform-x/nest-oidc-odpc-x-idp</h1>
-      <p class="tag">Reusable NestJS OIDC (authorization-code + PKCE) module against the ODPCX IdP Link, plus a jose RS256 session cookie.</p>
-    </header>
+    <div class="content">
+      <header class="hero">
+        <h1>@odpc-platform-x/nest-oidc-odpc-x-idp</h1>
+        <p class="tag">Reusable NestJS OIDC (authorization-code + PKCE) module against the ODPCX IdP Link, plus a jose RS256 session cookie.</p>
+        <div class="badges">
+          <span class="chip">NestJS 11</span>
+          <span class="chip">TypeScript 5</span>
+          <span class="chip">openid-client v6</span>
+          <span class="chip">jose RS256</span>
+          <span class="chip">Vitest</span>
+        </div>
+      </header>
 
-    <section id="overview">
-      <h2>Overview</h2>
-      <p>
-        แพ็กเกจนี้ทำหน้าที่เป็น <strong>auth module</strong> สำเร็จรูปสำหรับ NestJS แอปที่ต้องล็อกอินผ่าน
-        ODPCX IdP ด้วย OAuth2 authorization-code flow (PKCE) แล้วออก session cookie ของตัวเองที่เซ็นด้วย
-        RS256 (jose) แทนการอิง session ของ IdP โดยตรง ตัวแพ็กเกจเป็น <em>generic core</em> เท่านั้น —
-        ไม่มี role, ไม่มี Prisma, ไม่มี JIT-provisioning logic ผูกมาด้วย — ฝั่ง host แอปต้อง implement
-        <code>AuthUserService</code> หนึ่งอินเทอร์เฟซเพื่อเชื่อมกับ user store ของตัวเอง
-      </p>
-      <div class="diagram-wrap">
-        <svg viewBox="0 0 900 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sequence diagram of the auth flow">
-          <defs>
-            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M0,0 L10,5 L0,10 z" class="arrowhead"></path>
-            </marker>
-          </defs>
-
-          <!-- lifelines -->
-          <g class="lane-label">
-            <text x="40" y="24">Browser</text>
-            <text x="230" y="24">/auth/login</text>
-            <text x="420" y="24">ODPCX IdP</text>
-            <text x="610" y="24">/auth/callback</text>
-            <text x="800" y="24">onLogin / DB</text>
-          </g>
-          <line class="lifeline" x1="55" y1="34" x2="55" y2="410"></line>
-          <line class="lifeline" x1="255" y1="34" x2="255" y2="410"></line>
-          <line class="lifeline" x1="440" y1="34" x2="440" y2="410"></line>
-          <line class="lifeline" x1="650" y1="34" x2="650" y2="410"></line>
-          <line class="lifeline" x1="815" y1="34" x2="815" y2="410"></line>
-
-          <!-- 1: Browser -> /auth/login -->
-          <path class="msg" d="M55,60 L255,60" marker-end="url(#arrow)"></path>
-          <text class="msg-label" x="70" y="52">GET /auth/login</text>
-
-          <!-- 2: /auth/login -> IdP (redirect w/ PKCE) -->
-          <path class="msg" d="M255,110 L440,110" marker-end="url(#arrow)"></path>
-          <text class="msg-label" x="270" y="102">302 → authorize URL (PKCE)</text>
-
-          <!-- 3: IdP -> browser (login form), shown as note -->
-          <text class="msg-label" x="450" y="150" style="opacity:.75">candidate logs in at IdP</text>
-
-          <!-- 4: IdP -> Browser -> callback -->
-          <path class="msg" d="M440,190 L55,190" marker-end="url(#arrow)"></path>
-          <text class="msg-label" x="70" y="182">redirect w/ code + state</text>
-
-          <path class="msg" d="M55,230 L650,230" marker-end="url(#arrow)"></path>
-          <text class="msg-label" x="70" y="222">GET /auth/callback?code&amp;state</text>
-
-          <!-- 5: callback -> IdP token exchange -->
-          <path class="msg" d="M650,270 L440,270" marker-end="url(#arrow)"></path>
-          <text class="msg-label" x="460" y="262">authorizationCodeGrant()</text>
-
-          <path class="msg" d="M440,300 L650,300" marker-end="url(#arrow)"></path>
-          <text class="msg-label" x="460" y="316">tokens + claims</text>
-
-          <!-- 6: callback -> onLogin -->
-          <path class="msg" d="M650,340 L815,340" marker-end="url(#arrow)"></path>
-          <text class="msg-label" x="655" y="332">onLogin(claims)</text>
-
-          <path class="msg" d="M815,360 L650,360" marker-end="url(#arrow)"></path>
-          <text class="msg-label" x="655" y="376">SessionUser</text>
-
-          <!-- 7: callback -> browser sx_session cookie, then /auth/me -->
-          <path class="msg" d="M650,395 L55,395" marker-end="url(#arrow)"></path>
-          <text class="msg-label" x="70" y="387">302 + Set-Cookie: sx_session (JWT)</text>
-        </svg>
+      <div class="install-strip">
+        <code id="install-cmd">npm install @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose</code>
+        <button class="copy-btn" id="copy-btn" type="button">Copy</button>
       </div>
-      <p class="callout">
-        หลังจากนั้น ทุก request ที่ต้อง auth จะแนบ <code>sx_session</code> cookie มาด้วย —
-        <code>AuthGuard</code> verify JWT แล้วยิง <code>GET /auth/me</code> → <code>GetMeUseCase</code>
-        เรียก <code>AuthUserService.getMe()</code> (ถ้า host implement ไว้) เพื่อคืนข้อมูล user เต็มรูปแบบ
-      </p>
-    </section>
 
-    <section id="installation">
-      <h2>Installation</h2>
-      <p>แพ็กเกจตีพิมพ์ที่ GitHub Packages ต้องตั้งค่า registry + token ก่อน install</p>
-      <h3>.npmrc</h3>
-      <pre><code>@odpc-platform-x:registry=https://npm.pkg.github.com
+      <section id="overview">
+        <p class="eyebrow">Overview</p>
+        <h2>Overview</h2>
+        <p>
+          แพ็กเกจนี้ทำหน้าที่เป็น <strong>auth module</strong> สำเร็จรูปสำหรับ NestJS แอปที่ต้องล็อกอินผ่าน
+          ODPCX IdP Link ด้วย OAuth2 authorization-code flow (PKCE) แล้วออก session cookie ของตัวเองที่เซ็นด้วย
+          RS256 (jose) แทนการอิง session ของ IdP โดยตรง ตัวแพ็กเกจเป็น <em>generic core</em> เท่านั้น —
+          ไม่มี role, ไม่มี Prisma, ไม่มี JIT-provisioning logic ผูกมาด้วย — ฝั่ง host แอปต้อง implement
+          <code>AuthUserService</code> หนึ่งอินเทอร์เฟซเพื่อเชื่อมกับ user store ของตัวเอง
+        </p>
+
+        <div class="flow-wrap">
+          <div class="rail">
+            <div class="rail-traveler" aria-hidden="true"></div>
+            <div class="rail-node" data-stage="browser">
+              <div class="rail-dot-static"></div>
+              <div class="rail-label">Browser</div>
+            </div>
+            <div class="rail-node" data-stage="login">
+              <div class="rail-dot-static"></div>
+              <div class="rail-label"><code>/auth/login</code></div>
+            </div>
+            <div class="rail-node" data-stage="idp">
+              <div class="rail-dot-static"></div>
+              <div class="rail-label">ODPCX IdP Link</div>
+            </div>
+            <div class="rail-node" data-stage="callback">
+              <div class="rail-dot-static"></div>
+              <div class="rail-label"><code>/auth/callback</code></div>
+            </div>
+            <div class="rail-node" data-stage="cookie">
+              <div class="rail-dot-static"></div>
+              <div class="rail-label"><code>sx_session</code> cookie</div>
+            </div>
+          </div>
+        </div>
+        <p class="rail-caption">ผู้ใช้ล็อกอินผ่าน ODPCX IdP Link แล้วได้รับ token กลับมาเป็น session cookie ที่เซ็นด้วย RS256</p>
+
+        <p class="callout">
+          หลังจากนั้น ทุก request ที่ต้อง auth จะแนบ <code>sx_session</code> cookie มาด้วย —
+          <code>AuthGuard</code> verify JWT แล้วยิง <code>GET /auth/me</code> → <code>GetMeUseCase</code>
+          เรียก <code>AuthUserService.getMe()</code> (ถ้า host implement ไว้) เพื่อคืนข้อมูล user เต็มรูปแบบ
+        </p>
+      </section>
+
+      <section id="installation">
+        <p class="eyebrow">Setup</p>
+        <h2>Installation</h2>
+        <p>แพ็กเกจตีพิมพ์ที่ GitHub Packages ต้องตั้งค่า registry + token ก่อน install</p>
+        <h3>.npmrc</h3>
+        <pre><code>@odpc-platform-x:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}</code></pre>
-      <h3>Install</h3>
-      <pre><code>npm install @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose
+        <h3>Install</h3>
+        <pre><code>npm install @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose
 # or
 pnpm add @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose</code></pre>
-      <h3>peerDependencies</h3>
-      <ul class="plain">
-        <li><code>@nestjs/common</code> — <code>^11.0.0</code></li>
-        <li><code>@nestjs/core</code> — <code>^11.0.0</code></li>
-        <li><code>jose</code> — <code>^5.0.0 || ^6.0.0</code></li>
-        <li><code>openid-client</code> — <code>^6.0.0</code></li>
-      </ul>
-    </section>
+        <h3>peerDependencies</h3>
+        <ul class="plain">
+          <li><code>@nestjs/common</code> — <code>^11.0.0</code></li>
+          <li><code>@nestjs/core</code> — <code>^11.0.0</code></li>
+          <li><code>jose</code> — <code>^5.0.0 || ^6.0.0</code></li>
+          <li><code>openid-client</code> — <code>^6.0.0</code></li>
+        </ul>
+      </section>
 
-    <section id="quickstart">
-      <h2>Quickstart</h2>
-      <h3>1. Implement <code>AuthUserService</code></h3>
-      <p>นี่คือจุดเดียวที่ host แอปต้อง implement เอง — JIT-provisioning, Prisma upsert, role logic ทั้งหมดไปอยู่ที่นี่</p>
-      <pre><code>import { Injectable } from '@nestjs/common'
+      <section id="quickstart">
+        <p class="eyebrow">Get running</p>
+        <h2>Quickstart</h2>
+        <ol class="step-list">
+          <li>
+            <h3 style="margin-top:0">Implement <code>AuthUserService</code></h3>
+            <p>นี่คือจุดเดียวที่ host แอปต้อง implement เอง — JIT-provisioning, Prisma upsert, role logic ทั้งหมดไปอยู่ที่นี่</p>
+            <pre><code>import { Injectable } from '@nestjs/common'
 import { AuthUserService, OidcClaims, SessionUser } from '@odpc-platform-x/nest-oidc-odpc-x-idp'
 
 @Injectable()
@@ -295,14 +462,15 @@ class MyAuthUserService implements AuthUserService {
     return this.users.findWithRoles(sessionUser.sub)
   }
 }</code></pre>
-
-      <h3>2. Wire up <code>AuthModule.forRoot(options, provider)</code></h3>
-      <p>
-        <code>forRoot</code> รับ <strong>สองอาร์กิวเมนต์</strong>: config object และ Nest <code>Provider</code>
-        (class หรือ <code>{ provide, useFactory }</code>) สำหรับ <code>AuthUserService</code> — ไม่ได้รวมกันเป็น
-        options เดียวเพราะ provider เป็น host-implemented class ไม่ใช่ data ธรรมดา
-      </p>
-      <pre><code>import { Module } from '@nestjs/common'
+          </li>
+          <li>
+            <h3 style="margin-top:0">Wire up <code>AuthModule.forRoot(options, provider)</code></h3>
+            <p>
+              <code>forRoot</code> รับ <strong>สองอาร์กิวเมนต์</strong>: config object และ Nest <code>Provider</code>
+              (class หรือ <code>{ provide, useFactory }</code>) สำหรับ <code>AuthUserService</code> — ไม่ได้รวมกันเป็น
+              options เดียวเพราะ provider เป็น host-implemented class ไม่ใช่ data ธรรมดา
+            </p>
+            <pre><code>import { Module } from '@nestjs/common'
 import { AuthModule } from '@odpc-platform-x/nest-oidc-odpc-x-idp'
 
 @Module({
@@ -328,93 +496,99 @@ import { AuthModule } from '@odpc-platform-x/nest-oidc-odpc-x-idp'
   ],
 })
 export class AppModule {}</code></pre>
-      <pre><code># .env — Official ODPCX IdP (frontend: https://idp.odpcx.com)
+            <pre><code># .env — Official ODPCX IdP (frontend: https://idp.odpcx.com)
 OIDC_ISSUER=https://api.idp.odpcx.com
 OIDC_CLIENT_ID=...
 OIDC_CLIENT_SECRET=...
 OIDC_REDIRECT_URI=https://your-app.example.com/v1/auth/callback</code></pre>
-      <p>
-        Discovery document:
-        <code>https://api.idp.odpcx.com/.well-known/openid-configuration</code>
-      </p>
-      <p>
-        This wires up <code>GET /auth/login</code>, <code>GET /auth/callback</code>,
-        <code>POST /auth/logout</code>, <code>GET /auth/me</code>, and exports <code>AuthGuard</code>
-        for use on your own protected routes. Layer your own <code>RolesGuard</code> / <code>@Roles()</code>
-        on top — that's intentionally not part of this package.
-      </p>
-    </section>
+            <p>
+              Discovery document:
+              <code>https://api.idp.odpcx.com/.well-known/openid-configuration</code>
+            </p>
+            <p>
+              This wires up <code>GET /auth/login</code>, <code>GET /auth/callback</code>,
+              <code>POST /auth/logout</code>, <code>GET /auth/me</code>, and exports <code>AuthGuard</code>
+              for use on your own protected routes. Layer your own <code>RolesGuard</code> / <code>@Roles()</code>
+              on top — that's intentionally not part of this package.
+            </p>
+          </li>
+        </ol>
+      </section>
 
-    <section id="options">
-      <h2>Options reference</h2>
-      <table>
-        <thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td><code>oidc.issuer</code></td><td><code>string</code></td><td>required</td><td>ODPCX IdP issuer URL</td></tr>
-          <tr><td><code>oidc.clientId</code></td><td><code>string</code></td><td>required</td><td></td></tr>
-          <tr><td><code>oidc.clientSecret</code></td><td><code>string</code></td><td>required</td><td></td></tr>
-          <tr><td><code>oidc.redirectUri</code></td><td><code>string</code></td><td>required</td><td>must match callback route</td></tr>
-          <tr><td><code>oidc.scopes</code></td><td><code>string</code></td><td>—</td><td>optional override</td></tr>
-          <tr><td><code>oidc.postLogoutRedirectUri</code></td><td><code>string</code></td><td>—</td><td>used by <code>buildEndSessionUrl</code></td></tr>
-          <tr><td><code>jwt.privateKey</code></td><td><code>string</code></td><td>required</td><td>PKCS8 PEM, RS256</td></tr>
-          <tr><td><code>jwt.publicKey</code></td><td><code>string</code></td><td>required</td><td>SPKI PEM, RS256</td></tr>
-          <tr><td><code>jwt.issuer</code></td><td><code>string</code></td><td>required</td><td>session JWT <code>iss</code></td></tr>
-          <tr><td><code>jwt.audience</code></td><td><code>string</code></td><td>required</td><td>session JWT <code>aud</code></td></tr>
-          <tr><td><code>jwt.accessTtlSeconds</code></td><td><code>number</code></td><td><code>3600</code></td><td>session cookie + JWT lifetime</td></tr>
-          <tr><td><code>cookies.sessionCookieName</code></td><td><code>string</code></td><td><code>'sx_session'</code></td><td></td></tr>
-          <tr><td><code>cookies.txCookieName</code></td><td><code>string</code></td><td><code>'sx_oauth_tx'</code></td><td>short-lived, 5 min, holds PKCE tx state</td></tr>
-          <tr><td><code>cookies.secure</code></td><td><code>boolean</code></td><td><code>NODE_ENV === 'production'</code></td><td></td></tr>
-          <tr><td><code>appBaseUrl</code></td><td><code>string</code></td><td>required</td><td>where login/callback redirect back to</td></tr>
-          <tr><td><code>controller.disabled</code></td><td><code>boolean</code></td><td><code>false</code></td><td>omit the built-in <code>AuthController</code> entirely</td></tr>
-          <tr><td><code>controller.prefix</code></td><td><code>string</code></td><td>—</td><td><strong>currently a no-op</strong>, see Caveats</td></tr>
-        </tbody>
-      </table>
-    </section>
+      <section id="options">
+        <p class="eyebrow">Reference</p>
+        <h2>Options reference</h2>
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><code>oidc.issuer</code></td><td><code>string</code></td><td>required</td><td>ODPCX IdP issuer URL</td></tr>
+            <tr><td><code>oidc.clientId</code></td><td><code>string</code></td><td>required</td><td></td></tr>
+            <tr><td><code>oidc.clientSecret</code></td><td><code>string</code></td><td>required</td><td></td></tr>
+            <tr><td><code>oidc.redirectUri</code></td><td><code>string</code></td><td>required</td><td>must match callback route</td></tr>
+            <tr><td><code>oidc.scopes</code></td><td><code>string</code></td><td>—</td><td>optional override</td></tr>
+            <tr><td><code>oidc.postLogoutRedirectUri</code></td><td><code>string</code></td><td>—</td><td>used by <code>buildEndSessionUrl</code></td></tr>
+            <tr><td><code>jwt.privateKey</code></td><td><code>string</code></td><td>required</td><td>PKCS8 PEM, RS256</td></tr>
+            <tr><td><code>jwt.publicKey</code></td><td><code>string</code></td><td>required</td><td>SPKI PEM, RS256</td></tr>
+            <tr><td><code>jwt.issuer</code></td><td><code>string</code></td><td>required</td><td>session JWT <code>iss</code></td></tr>
+            <tr><td><code>jwt.audience</code></td><td><code>string</code></td><td>required</td><td>session JWT <code>aud</code></td></tr>
+            <tr><td><code>jwt.accessTtlSeconds</code></td><td><code>number</code></td><td><code>3600</code></td><td>session cookie + JWT lifetime</td></tr>
+            <tr><td><code>cookies.sessionCookieName</code></td><td><code>string</code></td><td><code>'sx_session'</code></td><td></td></tr>
+            <tr><td><code>cookies.txCookieName</code></td><td><code>string</code></td><td><code>'sx_oauth_tx'</code></td><td>short-lived, 5 min, holds PKCE tx state</td></tr>
+            <tr><td><code>cookies.secure</code></td><td><code>boolean</code></td><td><code>NODE_ENV === 'production'</code></td><td></td></tr>
+            <tr><td><code>appBaseUrl</code></td><td><code>string</code></td><td>required</td><td>where login/callback redirect back to</td></tr>
+            <tr><td><code>controller.disabled</code></td><td><code>boolean</code></td><td><code>false</code></td><td>omit the built-in <code>AuthController</code> entirely</td></tr>
+            <tr><td><code>controller.prefix</code></td><td><code>string</code></td><td>—</td><td><strong>currently a no-op</strong>, see Caveats</td></tr>
+          </tbody>
+        </table>
+      </section>
 
-    <section id="public-api">
-      <h2>Public API</h2>
-      <p>Everything exported from the package root (<code>src/index.ts</code>):</p>
-      <ul class="plain">
-        <li><code>AuthModule</code> — dynamic module, use via <code>.forRoot(options, provider)</code></li>
-        <li><code>AUTH_USER_SERVICE</code> — DI token for the host-supplied <code>AuthUserService</code></li>
-        <li><code>AuthGuard</code> — Nest guard, verifies the session cookie and attaches <code>req.jwtPayload</code></li>
-        <li><code>DEFAULT_SESSION_COOKIE</code> — the string <code>'sx_session'</code></li>
-        <li><code>AuthModuleOptions</code> (type)</li>
-        <li><code>AuthUserService</code> (type) — <code>onLogin(claims): Promise&lt;SessionUser&gt;</code>, optional <code>getMe?(sessionUser): Promise&lt;unknown&gt;</code></li>
-        <li><code>OidcClaims</code> (type) — <code>sub, email, displayName, idToken, refreshToken?, pictureUrl?</code></li>
-        <li><code>SessionUser</code> (type) — <code>sub, email, displayName</code>, plus any extra fields the host adds (e.g. <code>roles</code>)</li>
-      </ul>
-    </section>
+      <section id="public-api">
+        <p class="eyebrow">Reference</p>
+        <h2>Public API</h2>
+        <p>Everything exported from the package root (<code>src/index.ts</code>):</p>
+        <ul class="plain">
+          <li><code>AuthModule</code> — dynamic module, use via <code>.forRoot(options, provider)</code></li>
+          <li><code>AUTH_USER_SERVICE</code> — DI token for the host-supplied <code>AuthUserService</code></li>
+          <li><code>AuthGuard</code> — Nest guard, verifies the session cookie and attaches <code>req.jwtPayload</code></li>
+          <li><code>DEFAULT_SESSION_COOKIE</code> — the string <code>'sx_session'</code></li>
+          <li><code>AuthModuleOptions</code> (type)</li>
+          <li><code>AuthUserService</code> (type) — <code>onLogin(claims): Promise&lt;SessionUser&gt;</code>, optional <code>getMe?(sessionUser): Promise&lt;unknown&gt;</code></li>
+          <li><code>OidcClaims</code> (type) — <code>sub, email, displayName, idToken, refreshToken?, pictureUrl?</code></li>
+          <li><code>SessionUser</code> (type) — <code>sub, email, displayName</code>, plus any extra fields the host adds (e.g. <code>roles</code>)</li>
+        </ul>
+      </section>
 
-    <section id="caveats">
-      <h2>Caveats</h2>
-      <ul class="plain">
-        <li>
-          <strong><code>controller.prefix</code> is a no-op.</strong> Nest's <code>@Controller()</code>
-          path is fixed at class-decoration time, so a per-instance dynamic prefix isn't cheap to support
-          (see the <code>// ponytail:</code> comment in <code>src/controller/auth.controller.ts</code>).
-          The controller is permanently mounted at <code>/auth/*</code>. Wrap it in your own
-          <code>RouterModule</code> config if you need a different mount point.
-        </li>
-        <li>
-          <strong><code>controller.disabled</code></strong> omits the built-in <code>AuthController</code>
-          entirely — the use-cases (<code>BuildLoginUrlUseCase</code>, <code>HandleCallbackUseCase</code>,
-          <code>GetMeUseCase</code>, <code>LogoutUseCase</code>) and <code>AuthGuard</code> are still provided
-          and exported, so you can write your own routes against them.
-        </li>
-        <li>
-          <strong>Lazy re-discovery.</strong> OIDC discovery against the IdP happens lazily inside the
-          adapter, not only at boot — if the IdP is down when the app starts, the module still comes up;
-          the next request that needs the IdP (login/callback) retries discovery and recovers automatically
-          once the IdP is back, no app restart required.
-        </li>
-        <li>
-          <strong>No role/permission guards included.</strong> <code>RolesGuard</code>, <code>@Roles()</code>,
-          any authorization beyond "is this a valid session" is a host concern — layer your own on top of
-          <code>AuthGuard</code>.
-        </li>
-      </ul>
-    </section>
+      <section id="caveats">
+        <p class="eyebrow">Read before you rely on this</p>
+        <h2>Caveats</h2>
+        <ul class="plain">
+          <li>
+            <strong><code>controller.prefix</code> is a no-op.</strong> Nest's <code>@Controller()</code>
+            path is fixed at class-decoration time, so a per-instance dynamic prefix isn't cheap to support
+            (see the <code>// ponytail:</code> comment in <code>src/controller/auth.controller.ts</code>).
+            The controller is permanently mounted at <code>/auth/*</code>. Wrap it in your own
+            <code>RouterModule</code> config if you need a different mount point.
+          </li>
+          <li>
+            <strong><code>controller.disabled</code></strong> omits the built-in <code>AuthController</code>
+            entirely — the use-cases (<code>BuildLoginUrlUseCase</code>, <code>HandleCallbackUseCase</code>,
+            <code>GetMeUseCase</code>, <code>LogoutUseCase</code>) and <code>AuthGuard</code> are still provided
+            and exported, so you can write your own routes against them.
+          </li>
+          <li>
+            <strong>Lazy re-discovery.</strong> OIDC discovery against the IdP happens lazily inside the
+            adapter, not only at boot — if the IdP is down when the app starts, the module still comes up;
+            the next request that needs the IdP (login/callback) retries discovery and recovers automatically
+            once the IdP is back, no app restart required.
+          </li>
+          <li>
+            <strong>No role/permission guards included.</strong> <code>RolesGuard</code>, <code>@Roles()</code>,
+            any authorization beyond "is this a valid session" is a host concern — layer your own on top of
+            <code>AuthGuard</code>.
+          </li>
+        </ul>
+      </section>
+    </div>
   </main>
 </div>
 
@@ -439,9 +613,22 @@ OIDC_REDIRECT_URI=https://your-app.example.com/v1/auth/callback</code></pre>
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
   })();
+
+  (function () {
+    var btn = document.getElementById('copy-btn');
+    var cmd = document.getElementById('install-cmd');
+    if (!btn || !cmd) return;
+    btn.addEventListener('click', function () {
+      navigator.clipboard.writeText(cmd.textContent).then(function () {
+        var original = btn.textContent;
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = original; }, 1500);
+      });
+    });
+  })();
 </script>
 
-<footer style="text-align: center; padding: 3rem 2rem 1rem; color: var(--fg-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 3rem;">
+<footer style="text-align: center; padding: 3rem 2rem 1rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 3rem;">
   <p style="margin: 0;">ODPC-X-Platform : สำนักงานป้องกันควบคุมโรคที่ 10 จังหวัดอุบลราชธานี</p>
 </footer>
 </body>
