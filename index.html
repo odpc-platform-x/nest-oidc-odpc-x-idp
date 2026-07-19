@@ -341,15 +341,20 @@
     </div>
     <ul>
       <li><a href="#overview">Overview</a></li>
+      <li><a href="#requirements">Requirements</a></li>
       <li><a href="#installation">Installation</a></li>
       <li><a href="#quickstart">Quickstart</a></li>
+      <li><a href="#routes">Routes</a></li>
+      <li><a href="#protecting-routes">Protecting routes</a></li>
+      <li><a href="#session-notes">Session tokens</a></li>
+      <li><a href="#config">Config loading</a></li>
       <li><a href="#options">Options reference</a></li>
       <li><a href="#public-api">Public API</a></li>
       <li><a href="#caveats">Caveats</a></li>
     </ul>
     <div class="sidebar-logos">
       <a href="https://idp.odpcx.com"><img src="https://cdn.odpcx.com/public/idp/idp-logo.webp" alt="ODPCX IdP Link"></a>
-      <img src="https://cdn.odpcx.com/public/idp/odpcx-logo.webp" alt="ODPC-X Platform">
+      <a href="https://odpc10.ddc.moph.go.th"><img src="https://cdn.odpcx.com/public/idp/odpcx-logo.webp" alt="ODPC-X Platform"></a>
     </div>
   </nav>
 
@@ -358,12 +363,41 @@
       <header class="hero">
         <h1>@odpc-platform-x/nest-oidc-odpc-x-idp</h1>
         <p class="tag">Reusable NestJS OIDC (authorization-code + PKCE) module against the ODPCX IdP Link, plus a jose RS256 session cookie.</p>
-        <div class="badges">
-          <span class="chip">NestJS 11</span>
-          <span class="chip">TypeScript 5</span>
-          <span class="chip">openid-client v6</span>
-          <span class="chip">jose RS256</span>
-          <span class="chip">Vitest</span>
+        <div class="badges" style="display:flex; gap:1rem; flex-wrap:wrap; margin:1.2rem 0;">
+          <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; color:var(--muted);">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <polygon points="10,2 15,6 14,13 10,15 6,13 5,6"/>
+            </svg>
+            NestJS 11
+          </div>
+          <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; color:var(--muted);">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M3 2h14v14H3z M6 5h2v8H6z M10 7h2v6h-2z M14 4h2v9h-2z"/>
+            </svg>
+            TypeScript 5
+          </div>
+          <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; color:var(--muted);">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <rect x="2" y="2" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" rx="2"/>
+              <circle cx="5" cy="5" r="1.5" fill="currentColor"/>
+              <circle cx="10" cy="5" r="1.5" fill="currentColor"/>
+              <circle cx="15" cy="5" r="1.5" fill="currentColor"/>
+              <line x1="2" y1="8" x2="18" y2="8" stroke="currentColor" stroke-width="1"/>
+            </svg>
+            OpenID Connect
+          </div>
+          <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; color:var(--muted);">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10 2L15 5v10l-5 3-5-3V5l5-3M10 2v6m0 0l4 2.5M10 8l-4 2.5M10 14l4-2.5M10 14l-4-2.5"/>
+            </svg>
+            jose v5/v6
+          </div>
+          <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; color:var(--muted);">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M3 4h14v12H3z M5 6h3v8H5z M10 5h3v9h-3z M15 7h2v7h-2z M4 17h12"/>
+            </svg>
+            Vitest
+          </div>
         </div>
       </header>
 
@@ -415,6 +449,31 @@
           <code>AuthGuard</code> verify JWT แล้วยิง <code>GET /auth/me</code> → <code>GetMeUseCase</code>
           เรียก <code>AuthUserService.getMe()</code> (ถ้า host implement ไว้) เพื่อคืนข้อมูล user เต็มรูปแบบ
         </p>
+      </section>
+
+      <section id="requirements">
+        <p class="eyebrow">Setup</p>
+        <h2>Requirements</h2>
+        <ul class="plain">
+          <li><strong>Node >= 18</strong> — required per package.json <code>engines</code> field</li>
+          <li><strong><code>openid-client</code> v6 only</strong> — v5 class-based API (<code>Issuer</code>, <code>BaseClient</code>) is incompatible; this package uses v6 functional API</li>
+          <li><strong><code>jose</code> v5 or v6</strong> — peer dependency for RS256 JWT operations</li>
+          <li><strong>Host app must register <code>cookie-parser</code> middleware</strong> before any auth routes — <code>AuthGuard</code> reads <code>req.cookies</code>, and without this middleware every request will 401:
+            <pre><code>import cookieParser from 'cookie-parser'
+const app = await NestFactory.create(AppModule)
+app.use(cookieParser())
+// ... rest of setup</code></pre>
+          </li>
+          <li><strong>SPA on different origin?</strong> Enable CORS and fetch with credentials:
+            <pre><code>app.enableCors({
+  origin: process.env.SPA_ORIGIN,
+  credentials: true,
+})
+
+// Client-side:
+fetch('/auth/login', { credentials: 'include' })</code></pre>
+          </li>
+        </ul>
       </section>
 
       <section id="installation">
@@ -515,6 +574,130 @@ OIDC_REDIRECT_URI=https://your-app.example.com/v1/auth/callback</code></pre>
         </ol>
       </section>
 
+      <section id="routes">
+        <p class="eyebrow">HTTP API</p>
+        <h2>Routes</h2>
+        <table>
+          <thead><tr><th>Method / Path</th><th>Behavior</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>GET /auth/login</code></td>
+              <td>Redirect (302) to ODPCX IdP authorization endpoint. Sets <code>sx_oauth_tx</code> cookie (httpOnly, sameSite=lax, maxAge=5min) containing PKCE state/nonce. Returns 503 JSON if IdP discovery fails.</td>
+            </tr>
+            <tr>
+              <td><code>GET /auth/callback</code><br><code>?code&state&error</code></td>
+              <td><strong>Success:</strong> verify tx cookie + state, exchange code for IdP tokens, call host's <code>AuthUserService.onLogin()</code>, sign session JWT, set <code>sx_session</code> cookie, redirect (302) to appBaseUrl. <strong>Error from IdP</strong> (<code>?error=...</code>): clear tx cookie, redirect to appBaseUrl. <strong>Invalid tx/state:</strong> return 401 JSON. <strong>onLogin throw:</strong> return 500 JSON.</td>
+            </tr>
+            <tr>
+              <td><code>GET /auth/me</code><br>(AuthGuard)</td>
+              <td>Return JSON: <code>SessionUser</code> from the session cookie, or if host supplied <code>AuthUserService.getMe()</code>, return its result. Expired/absent session: 401.</td>
+            </tr>
+            <tr>
+              <td><code>POST /auth/logout</code><br>(AuthGuard)</td>
+              <td>Clear <code>sx_session</code> cookie, return JSON <code>{ logoutUrl }</code>. Client must navigate to <code>logoutUrl</code> itself (<code>window.location = logoutUrl</code>). Stale/expired cookie: 401.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="protecting-routes">
+        <p class="eyebrow">Auth guards</p>
+        <h2>Protecting your own routes</h2>
+        <p>Apply <code>AuthGuard</code> to any route that needs authentication. The guard attaches the JWT payload to <code>req.jwtPayload</code>:</p>
+        <pre><code>import { Controller, Get, Req, UseGuards } from '@nestjs/common'
+import { AuthGuard } from '@odpc-platform-x/nest-oidc-odpc-x-idp'
+import type { SessionUser } from '@odpc-platform-x/nest-oidc-odpc-x-idp'
+
+@Controller('api')
+export class MyController {
+  @UseGuards(AuthGuard)
+  @Get('my-data')
+  myData(@Req() req: Request) {
+    const user = (req as any).jwtPayload as SessionUser
+    // user.sub, user.email, user.displayName, ...
+    return { data: 'only for authenticated users' }
+  }
+}</code></pre>
+      </section>
+
+      <section id="session-notes">
+        <p class="eyebrow">Security</p>
+        <h2>Session token notes</h2>
+        <p>
+          The session JWT payload contains <code>sub</code>, <code>email</code>, <code>displayName</code>
+          (all from <code>SessionUser</code>) plus standard JWT claims (<code>iss</code>, <code>aud</code>, <code>iat</code>, <code>exp</code>).
+          The JWT is signed with RS256 and stored in a cookie.
+        </p>
+        <p class="callout">
+          <strong>⚠️ WARNING:</strong> The IdP's <code>idToken</code> is embedded in the session cookie payload (for logout flow)
+          but the cookie is <strong>signed, not encrypted</strong> — the payload is readable via base64 decode.
+          Do not include secrets or sensitive data in <code>SessionUser</code> that the host's <code>onLogin()</code>
+          method returns.
+        </p>
+        <p>
+          <strong>Session expiry:</strong> once a JWT expires (based on <code>accessTtlSeconds</code>), the cookie is no longer valid.
+          The client must log in again via <code>GET /auth/login</code> — there is no refresh token flow.
+          Design your UX so users hit login naturally, or add a client-side timer to redirect before expiry.
+        </p>
+      </section>
+
+      <section id="config">
+        <p class="eyebrow">Advanced</p>
+        <h2>Config loading</h2>
+        <p>This package does not support <code>forRootAsync</code> — <code>AuthModule.forRoot()</code> accepts a plain options object.
+        Load environment variables before calling <code>forRoot</code>:</p>
+        <pre><code>import * as dotenv from 'dotenv'
+dotenv.config()
+
+AuthModule.forRoot(
+  {
+    oidc: {
+      issuer: process.env.OIDC_ISSUER!,
+      clientId: process.env.OIDC_CLIENT_ID!,
+      clientSecret: process.env.OIDC_CLIENT_SECRET!,
+      redirectUri: process.env.OIDC_REDIRECT_URI!,
+    },
+    jwt: {
+      privateKey: process.env.JWT_PRIVATE_KEY!,
+      publicKey: process.env.JWT_PUBLIC_KEY!,
+      issuer: 'my-app',
+      audience: 'my-app',
+    },
+    appBaseUrl: process.env.APP_BASE_URL!,
+  },
+  MyAuthUserService,
+)</code></pre>
+        <p>
+          If you need dependency injection for config (e.g., loading from a ConfigService), wire the options
+          in your module's setup:
+        </p>
+        <pre><code>import { Module, Inject } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { AuthModule, AUTH_USER_SERVICE } from '@odpc-platform-x/nest-oidc-odpc-x-idp'
+
+@Module({
+  imports: [ConfigModule, AuthModule.forRoot(
+    {
+      oidc: {
+        issuer: configService.get('OIDC_ISSUER'),
+        clientId: configService.get('OIDC_CLIENT_ID'),
+        clientSecret: configService.get('OIDC_CLIENT_SECRET'),
+        redirectUri: configService.get('OIDC_REDIRECT_URI'),
+      },
+      jwt: {
+        privateKey: configService.get('JWT_PRIVATE_KEY'),
+        publicKey: configService.get('JWT_PUBLIC_KEY'),
+        issuer: 'my-app',
+        audience: 'my-app',
+      },
+      appBaseUrl: configService.get('APP_BASE_URL'),
+    },
+    { provide: AUTH_USER_SERVICE, useClass: MyAuthUserService },
+  )],
+})
+export class AppModule {}</code></pre>
+      </section>
+
       <section id="options">
         <p class="eyebrow">Reference</p>
         <h2>Options reference</h2>
@@ -551,6 +734,10 @@ OIDC_REDIRECT_URI=https://your-app.example.com/v1/auth/callback</code></pre>
           <li><code>AUTH_USER_SERVICE</code> — DI token for the host-supplied <code>AuthUserService</code></li>
           <li><code>AuthGuard</code> — Nest guard, verifies the session cookie and attaches <code>req.jwtPayload</code></li>
           <li><code>DEFAULT_SESSION_COOKIE</code> — the string <code>'sx_session'</code></li>
+          <li><code>BuildLoginUrlUseCase</code> — exported for <code>controller.disabled</code> mode</li>
+          <li><code>HandleCallbackUseCase</code> — exported for <code>controller.disabled</code> mode</li>
+          <li><code>GetMeUseCase</code> — exported for <code>controller.disabled</code> mode</li>
+          <li><code>LogoutUseCase</code> — exported for <code>controller.disabled</code> mode</li>
           <li><code>AuthModuleOptions</code> (type)</li>
           <li><code>AuthUserService</code> (type) — <code>onLogin(claims): Promise&lt;SessionUser&gt;</code>, optional <code>getMe?(sessionUser): Promise&lt;unknown&gt;</code></li>
           <li><code>OidcClaims</code> (type) — <code>sub, email, displayName, idToken, refreshToken?, pictureUrl?</code></li>
