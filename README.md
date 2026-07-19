@@ -23,7 +23,13 @@ logic. The host app supplies those via one interface.
 
 ```bash
 npm install @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose
+pnpm add @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose
+yarn add @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose
+bun add @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose
 ```
+
+Registry scope in `.npmrc` applies to all four package managers; bun >=1.1 reads
+`.npmrc` directly, no `bunfig.toml` needed.
 
 `@nestjs/common` / `@nestjs/core` are peer dependencies (already in any Nest app).
 

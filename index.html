@@ -187,6 +187,19 @@
   }
   .copy-btn:hover { background: var(--surface); }
 
+  .pm-tabs { display: flex; gap: 0.3rem; flex-shrink: 0; }
+  .pm-tab {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.22rem 0.6rem;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .pm-tab.active { color: #fff; background: var(--accent); border-color: var(--accent); }
+
   .eyebrow {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.68rem;
@@ -401,7 +414,17 @@
         </div>
       </header>
 
-      <div class="install-strip">
+      <div class="install-strip" id="install-strip"
+        data-npm="npm install @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose"
+        data-pnpm="pnpm add @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose"
+        data-yarn="yarn add @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose"
+        data-bun="bun add @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose">
+        <div class="pm-tabs" id="pm-tabs">
+          <button class="pm-tab active" data-pm="npm" type="button">npm</button>
+          <button class="pm-tab" data-pm="pnpm" type="button">pnpm</button>
+          <button class="pm-tab" data-pm="yarn" type="button">yarn</button>
+          <button class="pm-tab" data-pm="bun" type="button">bun</button>
+        </div>
         <code id="install-cmd">npm install @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose</code>
         <button class="copy-btn" id="copy-btn" type="button">Copy</button>
       </div>
@@ -485,8 +508,10 @@ fetch('/auth/login', { credentials: 'include' })</code></pre>
 //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}</code></pre>
         <h3>Install</h3>
         <pre><code>npm install @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose
-# or
-pnpm add @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose</code></pre>
+pnpm add @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose
+yarn add @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose
+bun add @odpc-platform-x/nest-oidc-odpc-x-idp openid-client jose</code></pre>
+        <p style="font-size:0.85rem; color:var(--muted);">bun &gt;=1.1 reads <code>.npmrc</code> directly — no <code>bunfig.toml</code> registry setup needed.</p>
         <h3>peerDependencies</h3>
         <ul class="plain">
           <li><code>@nestjs/common</code> — <code>^11.0.0</code></li>
@@ -802,9 +827,21 @@ export class AppModule {}</code></pre>
   })();
 
   (function () {
+    var strip = document.getElementById('install-strip');
     var btn = document.getElementById('copy-btn');
     var cmd = document.getElementById('install-cmd');
-    if (!btn || !cmd) return;
+    var tabs = document.getElementById('pm-tabs');
+    if (!strip || !btn || !cmd || !tabs) return;
+
+    tabs.addEventListener('click', function (e) {
+      var tab = e.target.closest('.pm-tab');
+      if (!tab) return;
+      Array.prototype.forEach.call(tabs.querySelectorAll('.pm-tab'), function (t) {
+        t.classList.toggle('active', t === tab);
+      });
+      cmd.textContent = strip.getAttribute('data-' + tab.dataset.pm);
+    });
+
     btn.addEventListener('click', function () {
       navigator.clipboard.writeText(cmd.textContent).then(function () {
         var original = btn.textContent;
