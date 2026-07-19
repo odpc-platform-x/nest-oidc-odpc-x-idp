@@ -1,6 +1,20 @@
+<p align="center">
+  <a href="https://idp.odpcx.com"><img src="https://cdn.odpcx.com/public/idp/idp-logo.webp" alt="ODPCX IdP Link" height="72"></a>
+  &nbsp;&nbsp;
+  <img src="https://cdn.odpcx.com/public/idp/odpcx-logo.webp" alt="ODPC-X Platform" height="72">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/NestJS-11-E0234E?logo=nestjs&logoColor=white" alt="NestJS">
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/OpenID_Connect-openid--client_v6-F78C40?logo=openid&logoColor=white" alt="OpenID Connect">
+  <img src="https://img.shields.io/badge/JWT-jose_RS256-000000?logo=jsonwebtokens&logoColor=white" alt="jose">
+  <img src="https://img.shields.io/badge/Vitest-tested-6E9F18?logo=vitest&logoColor=white" alt="Vitest">
+</p>
+
 # @odpc-platform-x/nest-oidc-odpc-x-idp
 
-Reusable NestJS OIDC (authorization-code + PKCE flow) against the ODPCX IdP,
+Reusable NestJS OIDC (authorization-code + PKCE flow) against the ODPCX IdP Link,
 plus a jose RS256 session cookie. Extracted from the Symposium X backend's
 `auth` module — generic core only: no roles, no Prisma, no JIT-provisioning
 logic. The host app supplies those via one interface.
@@ -67,7 +81,7 @@ export class AppModule {}
 ```
 
 ```dotenv
-# Official ODPCX IdP (frontend: https://idp.odpcx.com)
+# Official ODPCX IdP Link (frontend: https://idp.odpcx.com)
 OIDC_ISSUER=https://api.idp.odpcx.com
 OIDC_CLIENT_ID=...
 OIDC_CLIENT_SECRET=...
@@ -109,3 +123,7 @@ git push --tags
 
 CI (`.github/workflows/publish.yml`) builds, tests, and publishes to GitHub
 Packages (`https://npm.pkg.github.com`) on any `v*` tag push.
+
+---
+
+<p align="center"><sub>ODPC-X-Platform : สำนักงานป้องกันควบคุมโรคที่ 10 จังหวัดอุบลราชธานี</sub></p>
