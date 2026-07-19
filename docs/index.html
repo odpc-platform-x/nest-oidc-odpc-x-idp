@@ -806,9 +806,15 @@ export class AppModule {}</code></pre>
 
 <script>
   (function () {
-    var links = Array.prototype.slice.call(document.querySelectorAll('#sidebar a'));
+    var links = Array.prototype.slice.call(document.querySelectorAll('#sidebar a[href^="#"]'));
     var sections = links.map(function (a) {
-      return document.querySelector(a.getAttribute('href'));
+      var href = a.getAttribute('href');
+      if (href && href !== '#') {
+        try {
+          return document.querySelector(href);
+        } catch (e) {}
+      }
+      return null;
     });
 
     function onScroll() {
