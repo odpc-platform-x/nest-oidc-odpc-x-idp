@@ -1,6 +1,6 @@
 {
   "name": "@odpc-platform-x/nest-oidc-odpc-x-idp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Reusable NestJS OIDC (ODPCX IdP) + jose session-cookie auth module",
   "license": "MIT",
   "private": false,
