@@ -199,6 +199,14 @@ export class OpenIdConnectAdapter implements OidcProviderPort, OnModuleInit {
       idToken: tokens.id_token!,
       refreshToken: tokens.refresh_token,
       pictureUrl: userinfo['picture'] as string | undefined,
+      givenName: userinfo['given_name'] as string | undefined,
+      familyName: userinfo['family_name'] as string | undefined,
+      emailVerified: userinfo['email_verified'] as boolean | undefined,
+      phoneNumber: userinfo['phone_number'] as string | undefined,
+      birthdate: userinfo['birthdate'] as string | undefined,
+      address: userinfo['address'],
+      mfaEnabled: userinfo['mfa_enabled'] as boolean | undefined,
+      citizenId: userinfo['citizen_id'] as string | undefined,
     }
   }
 

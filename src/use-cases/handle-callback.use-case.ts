@@ -50,14 +50,7 @@ export class HandleCallbackUseCase {
 
     const tokenResult = await this.oidc.exchangeCode(input.code, tx)
 
-    const claims: OidcClaims = {
-      sub: tokenResult.sub,
-      email: tokenResult.email,
-      displayName: tokenResult.displayName,
-      idToken: tokenResult.idToken,
-      refreshToken: tokenResult.refreshToken,
-      pictureUrl: tokenResult.pictureUrl,
-    }
+    const claims: OidcClaims = { ...tokenResult }
 
     // JIT provisioning + role/season logic lives entirely in the host's AuthUserService
     const sessionUser = await this.authUserService.onLogin(claims)

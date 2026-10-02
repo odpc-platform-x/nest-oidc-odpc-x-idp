@@ -120,4 +120,44 @@ describe('OpenIdConnectAdapter', () => {
     expect(url3).toBeTruthy()
     expect(discoveryCallCount).toBe(1)
   })
+
+  test('exchangeCode maps userinfo claims to the token result', async () => {
+    const { discovery, authorizationCodeGrant, fetchUserInfo } = await import(
+      'openid-client'
+    )
+    vi.mocked(discovery).mockResolvedValue({} as any)
+    vi.mocked(authorizationCodeGrant).mockResolvedValue({
+      claims: () => ({ sub: 'sub-1' }),
+      access_token: 'at',
+      id_token: 'idt',
+    } as any)
+    vi.mocked(fetchUserInfo).mockResolvedValue({
+      sub: 'sub-1',
+      email: 'u@example.com',
+      email_verified: true,
+      given_name: 'Ex',
+      family_name: 'Ample',
+      mfa_enabled: false,
+      citizen_id: '1234567890123',
+    } as any)
+
+    adapter = new OpenIdConnectAdapter(mockOptions)
+    const result = await adapter.exchangeCode('code', {
+      state: 's',
+      nonce: 'n',
+      codeVerifier: 'v',
+    })
+
+    expect(result).toMatchObject({
+      sub: 'sub-1',
+      email: 'u@example.com',
+      displayName: 'Ex Ample',
+      emailVerified: true,
+      givenName: 'Ex',
+      familyName: 'Ample',
+      mfaEnabled: false,
+      citizenId: '1234567890123',
+    })
+    expect(result.phoneNumber).toBeUndefined()
+  })
 })

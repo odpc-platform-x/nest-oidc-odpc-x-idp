@@ -66,12 +66,18 @@ export class AuthController {
     @Query('code') code: string,
     @Query('state') state: string,
     @Query('error') error: string | undefined,
+    @Query('error_description') errorDescription: string | undefined,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     if (error) {
       res.clearCookie(this.txCookieName)
-      return res.redirect(302, this.options.appBaseUrl)
+      // Surface the IdP error to the host app (e.g. access_denied) instead of dropping it.
+      const target = new URL(this.options.appBaseUrl)
+      target.searchParams.set('error', error)
+      if (errorDescription)
+        target.searchParams.set('error_description', errorDescription)
+      return res.redirect(302, target.href)
     }
 
     const txToken: string | undefined = req.cookies?.[this.txCookieName]
