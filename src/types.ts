@@ -1,4 +1,17 @@
-export interface OidcClaims {
+// Released only when the matching scope was requested (profile / email / mfa / cid) —
+// undefined otherwise. See README "Scopes".
+export interface OidcExtraClaims {
+  givenName?: string
+  familyName?: string
+  emailVerified?: boolean
+  phoneNumber?: string
+  birthdate?: string
+  address?: unknown
+  mfaEnabled?: boolean
+  citizenId?: string
+}
+
+export interface OidcClaims extends OidcExtraClaims {
   sub: string
   email: string
   displayName: string

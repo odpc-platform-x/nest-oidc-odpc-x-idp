@@ -9,5 +9,6 @@ export type {
   AuthModuleOptions,
   AuthUserService,
   OidcClaims,
+  OidcExtraClaims,
   SessionUser,
 } from './types'

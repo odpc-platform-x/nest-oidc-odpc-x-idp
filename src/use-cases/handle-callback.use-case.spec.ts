@@ -111,6 +111,41 @@ describe('HandleCallbackUseCase', () => {
     expect(result.sessionJwt).toBeTruthy()
   })
 
+  test('passes the extra IdP claims through to onLogin', async () => {
+    const txToken = await sessionTokenService.sign({
+      sub: 's',
+      email: 'n',
+      displayName: 'v',
+    })
+
+    vi.mocked(oidcProvider.exchangeCode).mockResolvedValueOnce({
+      sub: 'oidc-sub-123',
+      email: 'user@example.com',
+      displayName: 'Test User',
+      idToken: 'id-token-123',
+      givenName: 'Test',
+      emailVerified: true,
+      mfaEnabled: false,
+      citizenId: '1234567890123',
+    })
+    vi.mocked(authUserService.onLogin).mockResolvedValueOnce({
+      sub: 'user-123',
+      email: 'user@example.com',
+      displayName: 'Test User',
+    })
+
+    await useCase.execute({ code: 'c', state: 's', txToken })
+
+    expect(vi.mocked(authUserService.onLogin)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        givenName: 'Test',
+        emailVerified: true,
+        mfaEnabled: false,
+        citizenId: '1234567890123',
+      }),
+    )
+  })
+
   test('returned SessionUser signed as-is', async () => {
     const state = 'test-state-xyz'
     const nonce = 'test-nonce-abc'

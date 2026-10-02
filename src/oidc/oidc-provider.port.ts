@@ -1,4 +1,6 @@
-export interface OidcTokenResult {
+import type { OidcExtraClaims } from '../types'
+
+export interface OidcTokenResult extends OidcExtraClaims {
   sub: string
   email: string
   displayName: string

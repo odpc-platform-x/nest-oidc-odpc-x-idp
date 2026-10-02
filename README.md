@@ -35,7 +35,8 @@ Registry scope in `.npmrc` applies to all four package managers; bun >=1.1 reads
 
 ## Requirements
 
-- **Node >= 18**
+- **Node >= 18** (NestJS 12 itself needs Node >= 20)
+- `@nestjs/common` / `@nestjs/core` **11 or 12** (peer dependencies)
 - `openid-client` **v6 only** — v5 class-based API (`Issuer`, `BaseClient`) is incompatible; this package uses v6 functional API (`discovery`, `authorizationCodeGrant`, `fetchUserInfo`).
 - `jose` v5 or v6 (peer dependency)
 - **Host app must register `cookie-parser` middleware** before any auth routes — `AuthGuard` reads `req.cookies`:
@@ -82,6 +83,26 @@ class MyAuthUserService implements AuthUserService {
   }
 }
 ```
+
+### `OidcClaims` fields
+
+`sub`, `email`, `displayName`, `idToken` (+ `refreshToken`, `pictureUrl` when released) are always passed.
+The fields below are `undefined` unless the matching scope was requested (see Scopes):
+
+| Field | IdP claim | Scope needed |
+|-------|-----------|--------------|
+| `givenName`, `familyName`, `phoneNumber`, `birthdate`, `address` | `given_name`, `family_name`, `phone_number`, `birthdate`, `address` | `profile` |
+| `emailVerified` | `email_verified` | `email` |
+| `mfaEnabled` | `mfa_enabled` | `mfa` |
+| `citizenId` | `citizen_id` | `cid` |
+
+## Scopes
+
+Default is `openid profile email` (`oidc.scopes`). Opt in to more:
+
+- `mfa` — adds `mfaEnabled`.
+- `cid` — adds `citizenId` (Thai citizen ID). Highest-sensitivity PII: the IdP audits every release and the client must be allowed to request it. Only ask for it if you need it, and never log or expose it.
+- `offline_access` — the IdP then issues a refresh token, delivered to `onLogin()` as `claims.refreshToken`. The package does not refresh sessions with it.
 
 ## Wiring it up
 
@@ -132,7 +153,7 @@ Layer your own `RolesGuard` / `@Roles()` decorator on top — that's intentional
 | Endpoint | Behavior |
 |----------|----------|
 | `GET /auth/login` | Redirect (302) to ODPCX IdP authorization endpoint. Sets `sx_oauth_tx` cookie (httpOnly, sameSite=lax, maxAge=5min) containing PKCE state/nonce. Returns 503 JSON if IdP discovery fails. |
-| `GET /auth/callback?code&state&error` | **Success**: verify tx cookie + state, exchange code for IdP tokens, call host's `AuthUserService.onLogin()`, sign session JWT, set `sx_session` cookie (httpOnly, sameSite=lax, secure in production, maxAge=accessTtlSeconds), redirect (302) to appBaseUrl. **Error from IdP** (`?error=...`): clear tx cookie, redirect to appBaseUrl. **Invalid tx/state mismatch**: return 401 JSON (no redirect). **onLogin throw**: return 500 JSON. |
+| `GET /auth/callback?code&state&error` | **Success**: verify tx cookie + state, exchange code for IdP tokens, call host's `AuthUserService.onLogin()`, sign session JWT, set `sx_session` cookie (httpOnly, sameSite=lax, secure in production, maxAge=accessTtlSeconds), redirect (302) to appBaseUrl. **Error from IdP** (`?error=...`): clear tx cookie, redirect to appBaseUrl with `?error=<code>&error_description=<text>` appended so the host app can show it. **Invalid tx/state mismatch**: return 401 JSON (no redirect). **onLogin throw**: return 500 JSON. |
 | `GET /auth/me` (AuthGuard) | Return JSON: `SessionUser` from the session cookie, or if host supplied `AuthUserService.getMe()`, return its result. Expired/absent session: 401. |
 | `POST /auth/logout` (AuthGuard) | Clear `sx_session` cookie, return JSON `{ logoutUrl }`. Client must navigate to `logoutUrl` itself (window.location = logoutUrl); this endpoint doesn't redirect. Stale/expired cookie: 401. 503 if IdP discovery never succeeded this process. |
 
